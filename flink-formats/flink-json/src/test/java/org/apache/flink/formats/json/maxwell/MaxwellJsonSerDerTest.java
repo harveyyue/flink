@@ -139,7 +139,8 @@ public class MaxwellJsonSerDerTest {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
         serializationSchema.open(null);
         List<String> result = new ArrayList<>();
         for (RowData rowData : collector.list) {

@@ -175,7 +175,8 @@ public class JsonFormatFactoryTest extends TestLogger {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
 
         final DynamicTableSink actualSink = createTableSink(options);
         assert actualSink instanceof TestDynamicTableFactory.DynamicTableSinkMock;
@@ -213,6 +214,7 @@ public class JsonFormatFactoryTest extends TestLogger {
         options.put("json.map-null-key.mode", "LITERAL");
         options.put("json.map-null-key.literal", "null");
         options.put("json.encode.decimal-as-plain-number", "true");
+        options.put("json.encode.ignore-null-fields", "false");
         return options;
     }
 

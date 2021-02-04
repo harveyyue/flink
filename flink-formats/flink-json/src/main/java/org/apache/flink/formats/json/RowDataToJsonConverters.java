@@ -68,13 +68,18 @@ public class RowDataToJsonConverters implements Serializable {
     /** The string literal when handling mode for map null key LITERAL. is */
     private final String mapNullKeyLiteral;
 
+    /** Flag indicating whether to serialize null fields. */
+    private final boolean encodeIgnoreNullFields;
+
     public RowDataToJsonConverters(
             TimestampFormat timestampFormat,
             JsonOptions.MapNullKeyMode mapNullKeyMode,
-            String mapNullKeyLiteral) {
+            String mapNullKeyLiteral,
+            boolean encodeIgnoreNullFields) {
         this.timestampFormat = timestampFormat;
         this.mapNullKeyMode = mapNullKeyMode;
         this.mapNullKeyLiteral = mapNullKeyLiteral;
+        this.encodeIgnoreNullFields = encodeIgnoreNullFields;
     }
 
     /**
@@ -239,6 +244,9 @@ public class RowDataToJsonConverters implements Serializable {
             int numElements = array.size();
             for (int i = 0; i < numElements; i++) {
                 Object element = elementGetter.getElementOrNull(array, i);
+                if (element == null && encodeIgnoreNullFields) {
+                    continue;
+                }
                 node.add(elementConverter.convert(mapper, null, element));
             }
 
@@ -295,6 +303,9 @@ public class RowDataToJsonConverters implements Serializable {
                 }
 
                 Object value = valueGetter.getElementOrNull(valueArray, i);
+                if (value == null && encodeIgnoreNullFields) {
+                    continue;
+                }
                 node.set(fieldName, valueConverter.convert(mapper, node.get(fieldName), value));
             }
 
@@ -325,11 +336,15 @@ public class RowDataToJsonConverters implements Serializable {
                 node = mapper.createObjectNode();
             } else {
                 node = (ObjectNode) reuse;
+                node.removeAll();
             }
             RowData row = (RowData) value;
             for (int i = 0; i < fieldCount; i++) {
                 String fieldName = fieldNames[i];
                 Object field = fieldGetters[i].getFieldOrNull(row);
+                if (field == null && encodeIgnoreNullFields) {
+                    continue;
+                }
                 node.set(fieldName, fieldConverters[i].convert(mapper, node.get(fieldName), field));
             }
             return node;

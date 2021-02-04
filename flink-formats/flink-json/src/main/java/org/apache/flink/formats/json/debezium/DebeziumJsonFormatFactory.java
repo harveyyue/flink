@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.flink.formats.json.JsonOptions.ENCODE_DECIMAL_AS_PLAIN_NUMBER;
+import static org.apache.flink.formats.json.JsonOptions.ENCODE_IGNORE_NULL_FIELDS;
 import static org.apache.flink.formats.json.debezium.DebeziumJsonOptions.IGNORE_PARSE_ERRORS;
 import static org.apache.flink.formats.json.debezium.DebeziumJsonOptions.JSON_MAP_NULL_KEY_LITERAL;
 import static org.apache.flink.formats.json.debezium.DebeziumJsonOptions.JSON_MAP_NULL_KEY_MODE;
@@ -89,6 +90,8 @@ public class DebeziumJsonFormatFactory
         final boolean encodeDecimalAsPlainNumber =
                 formatOptions.get(ENCODE_DECIMAL_AS_PLAIN_NUMBER);
 
+        final boolean encodeIgnoreNullFields = formatOptions.get(ENCODE_IGNORE_NULL_FIELDS);
+
         return new EncodingFormat<SerializationSchema<RowData>>() {
 
             @Override
@@ -110,7 +113,8 @@ public class DebeziumJsonFormatFactory
                         timestampFormat,
                         mapNullKeyMode,
                         mapNullKeyLiteral,
-                        encodeDecimalAsPlainNumber);
+                        encodeDecimalAsPlainNumber,
+                        encodeIgnoreNullFields);
             }
         };
     }
@@ -134,6 +138,7 @@ public class DebeziumJsonFormatFactory
         options.add(JSON_MAP_NULL_KEY_MODE);
         options.add(JSON_MAP_NULL_KEY_LITERAL);
         options.add(ENCODE_DECIMAL_AS_PLAIN_NUMBER);
+        options.add(ENCODE_IGNORE_NULL_FIELDS);
         return options;
     }
 }

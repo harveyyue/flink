@@ -66,19 +66,28 @@ public class JsonRowDataSerializationSchema implements SerializationSchema<RowDa
     /** Flag indicating whether to serialize all decimals as plain numbers. */
     private final boolean encodeDecimalAsPlainNumber;
 
+    /** Flag indicating whether to serialize null fields. */
+    private final boolean encodeIgnoreNullFields;
+
     public JsonRowDataSerializationSchema(
             RowType rowType,
             TimestampFormat timestampFormat,
             JsonOptions.MapNullKeyMode mapNullKeyMode,
             String mapNullKeyLiteral,
-            boolean encodeDecimalAsPlainNumber) {
+            boolean encodeDecimalAsPlainNumber,
+            boolean encodeIgnoreNullFields) {
         this.rowType = rowType;
         this.timestampFormat = timestampFormat;
         this.mapNullKeyMode = mapNullKeyMode;
         this.mapNullKeyLiteral = mapNullKeyLiteral;
         this.encodeDecimalAsPlainNumber = encodeDecimalAsPlainNumber;
+        this.encodeIgnoreNullFields = encodeIgnoreNullFields;
         this.runtimeConverter =
-                new RowDataToJsonConverters(timestampFormat, mapNullKeyMode, mapNullKeyLiteral)
+                new RowDataToJsonConverters(
+                                timestampFormat,
+                                mapNullKeyMode,
+                                mapNullKeyLiteral,
+                                encodeIgnoreNullFields)
                         .createConverter(rowType);
 
         mapper.configure(
@@ -112,7 +121,8 @@ public class JsonRowDataSerializationSchema implements SerializationSchema<RowDa
                 && timestampFormat.equals(that.timestampFormat)
                 && mapNullKeyMode.equals(that.mapNullKeyMode)
                 && mapNullKeyLiteral.equals(that.mapNullKeyLiteral)
-                && encodeDecimalAsPlainNumber == that.encodeDecimalAsPlainNumber;
+                && encodeDecimalAsPlainNumber == that.encodeDecimalAsPlainNumber
+                && encodeIgnoreNullFields == that.encodeIgnoreNullFields;
     }
 
     @Override
@@ -122,6 +132,7 @@ public class JsonRowDataSerializationSchema implements SerializationSchema<RowDa
                 timestampFormat,
                 mapNullKeyMode,
                 mapNullKeyLiteral,
-                encodeDecimalAsPlainNumber);
+                encodeDecimalAsPlainNumber,
+                encodeIgnoreNullFields);
     }
 }

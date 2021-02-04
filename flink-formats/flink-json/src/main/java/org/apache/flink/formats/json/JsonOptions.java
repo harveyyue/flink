@@ -80,6 +80,13 @@ public class JsonOptions {
                     .withDescription(
                             "Optional flag to specify whether to encode all decimals as plain numbers instead of possible scientific notations, false by default.");
 
+    public static final ConfigOption<Boolean> ENCODE_IGNORE_NULL_FIELDS =
+            ConfigOptions.key("encode.ignore-null-fields")
+                    .booleanType()
+                    .defaultValue(false)
+                    .withDescription(
+                            "Optional flag to specify whether to encode non null fields, false by default.");
+
     // --------------------------------------------------------------------------------------------
     // Option enumerations
     // --------------------------------------------------------------------------------------------

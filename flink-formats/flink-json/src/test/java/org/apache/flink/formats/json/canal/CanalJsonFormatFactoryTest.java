@@ -90,6 +90,7 @@ public class CanalJsonFormatFactoryTest extends TestLogger {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.FAIL,
                         "null",
+                        false,
                         false);
         SerializationSchema<RowData> actualSer = createSerializationSchema(options);
         assertEquals(expectedSer, actualSer);
@@ -105,6 +106,7 @@ public class CanalJsonFormatFactoryTest extends TestLogger {
         options.put("canal-json.map-null-key.mode", "LITERAL");
         options.put("canal-json.map-null-key.literal", "nullKey");
         options.put("canal-json.encode.decimal-as-plain-number", "true");
+        options.put("canal-json.encode.ignore-null-fields", "true");
 
         // test Deser
         CanalJsonDeserializationSchema expectedDeser =
@@ -125,6 +127,7 @@ public class CanalJsonFormatFactoryTest extends TestLogger {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "nullKey",
+                        true,
                         true);
         SerializationSchema<RowData> actualSer = createSerializationSchema(options);
         assertEquals(expectedSer, actualSer);

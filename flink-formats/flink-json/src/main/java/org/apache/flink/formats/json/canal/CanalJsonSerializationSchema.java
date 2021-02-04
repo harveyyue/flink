@@ -59,14 +59,16 @@ public class CanalJsonSerializationSchema implements SerializationSchema<RowData
             TimestampFormat timestampFormat,
             JsonOptions.MapNullKeyMode mapNullKeyMode,
             String mapNullKeyLiteral,
-            boolean encodeDecimalAsPlainNumber) {
+            boolean encodeDecimalAsPlainNumber,
+            boolean encodeIgnoreNullFields) {
         jsonSerializer =
                 new JsonRowDataSerializationSchema(
                         createJsonRowType(fromLogicalToDataType(rowType)),
                         timestampFormat,
                         mapNullKeyMode,
                         mapNullKeyLiteral,
-                        encodeDecimalAsPlainNumber);
+                        encodeDecimalAsPlainNumber,
+                        encodeIgnoreNullFields);
     }
 
     @Override

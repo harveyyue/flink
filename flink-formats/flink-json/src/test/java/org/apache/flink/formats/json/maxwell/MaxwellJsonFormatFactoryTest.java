@@ -75,7 +75,8 @@ public class MaxwellJsonFormatFactoryTest extends TestLogger {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
 
         final Map<String, String> options = getAllOptions();
 
@@ -169,6 +170,7 @@ public class MaxwellJsonFormatFactoryTest extends TestLogger {
         options.put("maxwell-json.map-null-key.mode", "LITERAL");
         options.put("maxwell-json.map-null-key.literal", "null");
         options.put("maxwell-json.encode.decimal-as-plain-number", "true");
+        options.put("maxwell-json.encode.ignore-null-fields", "false");
         return options;
     }
 

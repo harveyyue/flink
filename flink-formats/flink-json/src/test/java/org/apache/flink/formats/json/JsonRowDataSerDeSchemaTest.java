@@ -196,7 +196,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
 
         byte[] actualBytes = serializationSchema.serialize(rowData);
         assertEquals(new String(serializedJson), new String(actualBytes));
@@ -286,7 +287,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -337,7 +339,7 @@ public class JsonRowDataSerDeSchemaTest {
                 new String[] {
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"metrics\":{\"k1\":10.01,\"k2\":\"invalid\"}}",
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\", \"ops\":{\"id\":\"281708d0-4092-4c21-9233-931950b6eccf\"}, "
-                            + "\"ids\":[1, 2, 3]}",
+                            + "\"ids\":[1, 2, null]}",
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"metrics\":{}}",
                 };
 
@@ -345,8 +347,16 @@ public class JsonRowDataSerDeSchemaTest {
                 new String[] {
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"ops\":null,\"ids\":null,\"metrics\":{\"k1\":10.01,\"k2\":null}}",
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"ops\":{\"id\":\"281708d0-4092-4c21-9233-931950b6eccf\"},"
-                            + "\"ids\":[1,2,3],\"metrics\":null}",
+                            + "\"ids\":[1,2,null],\"metrics\":null}",
                     "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"ops\":null,\"ids\":null,\"metrics\":{}}",
+                };
+
+        String[] nonNullExpected =
+                new String[] {
+                    "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"metrics\":{\"k1\":10.01}}",
+                    "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"ops\":{\"id\":\"281708d0-4092-4c21-9233-931950b6eccf\"},"
+                            + "\"ids\":[1,2]}",
+                    "{\"svt\":\"2020-02-24T12:58:09.209+0800\",\"metrics\":{}}",
                 };
 
         RowType rowType =
@@ -371,6 +381,15 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
+                        true,
+                        false);
+        JsonRowDataSerializationSchema nonNullSerializationSchema =
+                new JsonRowDataSerializationSchema(
+                        rowType,
+                        TimestampFormat.ISO_8601,
+                        JsonOptions.MapNullKeyMode.LITERAL,
+                        "null",
+                        true,
                         true);
 
         for (int i = 0; i < jsons.length; i++) {
@@ -378,6 +397,8 @@ public class JsonRowDataSerDeSchemaTest {
             RowData row = deserializationSchema.deserialize(json.getBytes());
             String result = new String(serializationSchema.serialize(row));
             assertEquals(expected[i], result);
+            String nonNullResult = new String(nonNullSerializationSchema.serialize(row));
+            assertEquals(nonNullExpected[i], nonNullResult);
         }
     }
 
@@ -486,7 +507,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -529,7 +551,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.FAIL,
                         "null",
-                        true);
+                        true,
+                        false);
         // expect message for serializationSchema1
         String errorMessage1 =
                 "JSON format doesn't support to serialize map data with null keys."
@@ -541,7 +564,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.DROP,
                         "null",
-                        true);
+                        true,
+                        false);
         // expect result for serializationSchema2
         String expectResult2 = "{\"nestedMap\":{\"no-null key\":{\"no-null key\":1}}}";
 
@@ -551,7 +575,8 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.SQL,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "nullKey",
-                        true);
+                        true,
+                        false);
         // expect result for serializationSchema3
         String expectResult3 =
                 "{\"nestedMap\":{\"no-null key\":{\"no-null key\":1,\"nullKey\":2},\"nullKey\":{\"no-null key\":1,\"nullKey\":2}}}";
@@ -595,13 +620,15 @@ public class JsonRowDataSerDeSchemaTest {
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
-                        true);
+                        true,
+                        false);
         JsonRowDataSerializationSchema scientificDecimalSerializer =
                 new JsonRowDataSerializationSchema(
                         schema,
                         TimestampFormat.ISO_8601,
                         JsonOptions.MapNullKeyMode.LITERAL,
                         "null",
+                        false,
                         false);
 
         String plainDecimalJson =
